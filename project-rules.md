@@ -5,7 +5,7 @@
 - Student: Đặng Hoài An
 - Student ID: 24520039
 
-## General Lab Workflow
+## General Workflow
 
 - Follow Contract, Fail Test, Implement and Refactor.
 - Use atomic commits with conventional messages.
@@ -15,76 +15,89 @@
 ## Existing Stack
 
 - React 19, Vite, JavaScript and React Router 7.
-- Use createRoot and StrictMode.
+- Keep createRoot and StrictMode.
 - Keep one BrowserRouter in src/main.jsx.
 - Use the existing Vitest and React Testing Library setup.
-- Keep application text, code and commit messages in English.
+- Keep code, interface text and commit messages in English.
 
-## Exercise 1.1 Contract
+## Preserved Exercise 1.1 Contract
 
-- Lazy-load src/pages/PersonDetail.jsx on access to /person.
-- Declare the lazy component at module scope in App.jsx.
-- PersonDetail must default-export the actual page component.
+- Lazy-load the single PersonDetail page module.
+- Declare lazy at module scope in App.jsx.
 - Do not statically import PersonDetail in application modules.
-- Use a separate skeleton through Suspense.
+- Keep a separate Suspense skeleton.
 - Keep navigation outside the Suspense boundary.
-- Expose one polite loading status and a busy profile region.
-- Clear the busy state when the real profile is rendered.
-- Hide decorative skeleton content from assistive technology.
-- Share profile geometry and reserve avatar space.
-- Support reduced motion and visible keyboard focus.
-- Do not introduce a production loading delay.
-- Treat CLS = 0 as a browser verification target.
+- Expose one polite loading status outside the busy region.
+- Clear busy state when content is ready.
+- Hide skeleton decorations from assistive technology.
+- Match profile and skeleton geometry.
+- Reserve avatar space and support reduced motion.
+- Do not introduce production loading delays.
+- Verify CLS in the browser instead of assuming zero.
 
-## Exercise 1.2.1 Direct Requirements
+## Preserved Exercise 1.2.1 Contract
 
-- Use Routes and Route.
-- Declare route content through the element prop.
-- Use a shared Layout containing navigation and Outlet.
-- Use NavLink className callbacks receiving isActive.
+- Use Routes, Route and element props.
+- Shared Layout owns the single main element.
+- Layout renders child routes through Outlet.
+- NavLink uses className callbacks with isActive.
+- Preserve Home, About and the general not-found page.
 
-## Exercise 1.2.1 Routing Contract
+## Exercise 1.2.2 Direct Requirements
 
-- Parent route: path="/" with element={<Layout />}.
-- Index child: Home at /.
-- Child path="about": About at /about.
-- Child path="person": existing lazy profile at /person.
-- Child path="*": preserve the general not-found page.
-- Use relative child route paths.
-- Render exactly one main element, owned by Layout.
-- Render the matching child through Outlet inside main.
-- Keep navigation and main mounted across child navigation.
-- Use Link or NavLink for internal navigation.
-- Every NavLink must have a valid to prop.
-- Use end on the Home NavLink.
-- Active links use nav-link--active and aria-current="page".
-- Preserve the optional Detail prop in App as the existing test seam.
-- Production uses the default lazy detail component.
+- Use desktop Grid columns: minmax(280px, 1fr) 2fr.
+- Change to one column on narrow screens.
+- Read the person ID with useParams.
+- Find the record with people.find.
+- Check the lookup result before accessing person properties.
+- Render a person-not-found state for unknown IDs.
+- Render profile metadata with dl, dt and dd.
 
-## Implementation Choices
+## Data Contract
 
-- Keep the existing global stylesheet.
-- Add a small Layout stylesheet for the active class.
-- Keep the existing 600px responsive breakpoint.
-- Keep the fixed sample profile and semantic definition list.
-- Extract Home, About and NotFound into page modules.
+- Use one shared people array.
+- Each record has a unique stable string ID, name and role.
+- Avatar and additional facts are optional.
+- Reuse the existing featuredPerson data for the first record.
+- Do not generate IDs during render.
+- Do not use array indexes as list keys.
 
-## Acceptance
+## Component Contract
 
-- Existing Exercise 1.1 tests remain green.
-- Test Home, About navigation, direct About entry and active links.
-- Test layout persistence during pending and resolved detail loading.
-- Test, lint and production build pass.
-- Verify Back, Forward, direct local refresh and keyboard navigation.
-- Inspect Console for unresolved application errors and warnings.
+- PeopleLayout receives people.
+- It renders an accessible People navigation and an Outlet.
+- Each person uses NavLink, a stable key and an active callback.
+- PersonDetail receives the same people array.
+- URL parameters determine the selected record.
+- Do not synchronize selectedPerson state with the URL.
 
-## Scope Limits
+## Route Contract
 
-- No React Router v5 syntax.
-- No second BrowserRouter and no RouterProvider.
-- No currentPage state used as a routing substitute.
-- No dynamic IDs, useParams or people.find.
-- No ID-based not-found handling from Exercise 1.2.2.
-- No forms, forum, backend or Homework.
+- /: Home.
+- /about: About.
+- /people: directory and selection prompt.
+- /people/:id: lazy detail inside PeopleLayout.
+- /person: replace navigation to /people/24520039.
+- Other unmatched URLs: the existing general not-found page.
+
+## Loading and Error States
+
+- Select the loading skeleton using the target URL ID.
+- Keep both navigation regions visible during detail loading.
+- Unknown IDs have a matching pending fallback and final message.
+- A missing-record guard is not a React Error Boundary.
+- A client-side not-found view does not imply HTTP status 404.
 - Suspense does not provide import-error recovery.
-- Suspense does not automatically wait for fetch calls in useEffect.
+
+## Verification
+
+- Update existing tests when their route contract changes.
+- Test the directory, selection, URL, active links and missing IDs.
+- Preserve loading, accessibility and shared-layout regression tests.
+- Test, lint and build must pass.
+- Check desktop, 375px, long text and keyboard navigation.
+- Verify local refresh, history and production chunk loading.
+
+## Scope
+
+- No form engine, forum API, backend or Homework.

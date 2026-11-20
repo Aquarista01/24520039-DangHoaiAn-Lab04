@@ -1,37 +1,36 @@
 # Lab 04 Task Decomposition
 
-## Exercise 1.1: Existing Scope
+## Existing Work
 
-1. Define the lazy profile contract.
-2. Test pending and resolved module states.
-3. Implement the lazy profile route and Suspense skeleton.
-4. Verify accessibility, chunk loading and layout stability.
+- Exercise 1.1: lazy profile module, Suspense and accessible skeleton.
+- Exercise 1.2.1: shared routing layout, Outlet and active NavLink callbacks.
 
-## Exercise 1.2.1: Current Scope
+## Exercise 1.2.2
 
-1. Review the existing project, branch and baseline checks.
-2. Define the nested routing and shared layout contract.
-3. Add failing tests for the new routing behavior.
-4. Extract Layout, Home and the existing not-found page.
-5. Add About and declare nested child routes.
-6. Add NavLink active callbacks and reuse existing styling.
-7. Preserve the lazy profile route and its existing tests.
-8. Review the refactor and run test, lint and build.
-9. Verify navigation, browser history, direct refresh and keyboard access.
+1. Verify the current branch, working tree and baseline checks.
+2. Define the shared dataset and master-detail route contract.
+3. Update route-dependent regression tests.
+4. Add failing master-detail tests.
+5. Create PeopleLayout and the shared people dataset.
+6. Read dynamic IDs and implement guarded detail lookup.
+7. Integrate the existing lazy page and matching skeleton.
+8. Add responsive Grid and long-text handling.
+9. Review the refactor and run automated checks.
+10. Verify navigation, history, direct refresh and accessibility.
 
-## Commit Plan
+## Sprint 1 Functional Commits
 
-- docs: define the nested routing contract.
-- test: add failing nested routing tests.
-- feat: router layout.
-- Additional fix commits only when actual verification requires changes.
+- feat: router layout
+  Completed by the Exercise 1.2.1 implementation.
 
-These groups describe actual work.
-They do not impose a separate commit count for Exercise 1.2.1.
+- feat: detail route handling
+  Completed by the verified Exercise 1.2.2 implementation.
 
-## Sprint 1 Boundary
+## Supporting Commits
 
-The Sprint 1 functional commit "feat: router layout" belongs to this work.
+- Commit the updated contract before implementation.
+- Commit failing tests before implementation.
+- Add fix commits only for actual changes found during verification.
 
-The functional commit "feat: detail route handling" will be completed
-with Exercise 1.2.2, including its dynamic detail requirements.
+Supporting commit groups describe the actual workflow.
+They do not impose additional lecturer-mandated commit counts.
