@@ -35,3 +35,27 @@ This entry does not claim that the failure occurred on the student's
 Windows computer.
 
 Expected failing contract tests are TDD evidence, not AI failures.
+
+
+## Keyboard Check Ran Before Home Rendered
+
+### Observation
+
+The first automated Chrome run reached the production preview keyboard
+check and failed the assertion that the first Tab focused the skip link.
+
+### Evidence
+
+Chrome 157.0.8103.79 returned false for the comparison between
+document.activeElement and the skip link. The automation sent Tab after
+page.goto() without waiting for the Home heading to appear.
+
+### Correction
+
+Wait for the Home heading before sending Tab. Reload the document to reset
+focus before testing the profile link.
+
+### Verification
+
+The full Chrome rerun passed the keyboard checks on both dev and preview.
+The production run also measured zero CLS in all four scenarios.
