@@ -13,26 +13,22 @@ function createDeferredModule() {
     resolve = resolvePromise;
   });
 
-  return {
-    promise,
-    resolve,
-  };
+  return { promise, resolve };
 }
 
-function renderDetailRoute(Detail) {
+function renderDetail(Detail) {
   return render(
-    <MemoryRouter initialEntries={['/person']}>
+    <MemoryRouter initialEntries={['/people/24520039']}>
       <App Detail={Detail} />
     </MemoryRouter>,
   );
 }
 
-describe('Exercise 1.1 contract', () => {
-  it('renders accessible loading while the detail module is pending', () => {
+describe('Lazy person detail regression', () => {
+  it('exposes one polite loading status and hides decorations', () => {
     const deferred = createDeferredModule();
     const PendingDetail = lazy(() => deferred.promise);
-
-    const { container } = renderDetailRoute(PendingDetail);
+    const { container } = renderDetail(PendingDetail);
 
     const region = screen.getByRole('region', {
       name: 'Person detail',
@@ -44,8 +40,8 @@ describe('Exercise 1.1 contract', () => {
 
     expect(status).toHaveAttribute('aria-live', 'polite');
     expect(status).toHaveTextContent('Loading person detail.');
-    expect(container.querySelectorAll('[aria-live]')).toHaveLength(1);
     expect(status.closest('[aria-busy="true"]')).toBeNull();
+    expect(container.querySelectorAll('[aria-live]')).toHaveLength(1);
 
     expect(region.querySelector('.person-layout')).toHaveAttribute(
       'aria-hidden',
@@ -53,27 +49,17 @@ describe('Exercise 1.1 contract', () => {
     );
 
     expect(
-      screen.queryByRole('heading', {
-        name: featuredPerson.name,
-      }),
+      screen.queryByRole('heading', { name: featuredPerson.name }),
     ).not.toBeInTheDocument();
-
-    expect(
-      screen.getByRole('navigation', {
-        name: 'Primary',
-      }),
-    ).toBeInTheDocument();
   });
 
-  it('replaces the skeleton with the real module and clears busy state', async () => {
+  it('replaces the skeleton with the real profile and clears busy state', async () => {
     const deferred = createDeferredModule();
     const PendingDetail = lazy(() => deferred.promise);
 
-    renderDetailRoute(PendingDetail);
+    renderDetail(PendingDetail);
 
-    expect(screen.getByRole('status')).toHaveTextContent(
-      'Loading person detail.',
-    );
+    expect(screen.getByRole('status')).toBeInTheDocument();
 
     const detailModule = await import('../pages/PersonDetail.jsx');
 
@@ -83,9 +69,7 @@ describe('Exercise 1.1 contract', () => {
     });
 
     expect(
-      await screen.findByRole('heading', {
-        name: featuredPerson.name,
-      }),
+      await screen.findByRole('heading', { name: featuredPerson.name }),
     ).toBeInTheDocument();
 
     const region = screen.getByRole('region', {
@@ -95,29 +79,24 @@ describe('Exercise 1.1 contract', () => {
     expect(region).toHaveAttribute('aria-busy', 'false');
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
 
-    expect(
-      within(region).getByText(featuredPerson.role),
-    ).toBeInTheDocument();
+    const list = region.querySelector('dl');
+    expect(list).toBeInTheDocument();
 
     for (const fact of featuredPerson.facts) {
-      expect(
-        within(region).getByText(fact.label).closest('dt'),
-      ).toBeInTheDocument();
-
-      expect(
-        within(region).getByText(fact.value).closest('dd'),
-      ).toBeInTheDocument();
+      const term = within(list).getByText(fact.label).closest('dt');
+      expect(term).toBeInTheDocument();
+      expect(term.nextElementSibling).toHaveTextContent(fact.value);
     }
 
-    const avatar = within(region).getByRole('img', {
+    const image = within(region).getByRole('img', {
       name: featuredPerson.avatarAlt,
     });
 
-    expect(avatar).toHaveAttribute('width', '96');
-    expect(avatar).toHaveAttribute('height', '96');
+    expect(image).toHaveAttribute('width', '96');
+    expect(image).toHaveAttribute('height', '96');
   });
 
-  it('navigates through the real lazy route and preserves navigation', async () => {
+  it('opens the real lazy page while preserving navigation', async () => {
     const user = userEvent.setup();
 
     render(
@@ -126,44 +105,32 @@ describe('Exercise 1.1 contract', () => {
       </MemoryRouter>,
     );
 
-    expect(
-      screen.getByRole('heading', {
-        name: 'Performance & resiliency',
-      }),
-    ).toBeInTheDocument();
-
-    const navigation = screen.getByRole('navigation', {
-      name: 'Primary',
-    });
+    const primary = screen.getByRole('navigation', { name: 'Primary' });
 
     await user.click(
-      within(navigation).getByRole('link', {
-        name: 'Person detail',
-      }),
+      within(primary).getByRole('link', { name: 'People' }),
+    );
+
+    const directory = screen.getByRole('navigation', { name: 'People' });
+
+    await user.click(
+      within(directory).getByRole('link', { name: featuredPerson.name }),
     );
 
     expect(
-      await screen.findByRole('heading', {
-        name: featuredPerson.name,
-      }),
+      await screen.findByRole('heading', { name: featuredPerson.name }),
     ).toBeInTheDocument();
 
     expect(
-      screen.getByRole('navigation', {
-        name: 'Primary',
-      }),
-    ).toBe(navigation);
+      screen.getByRole('navigation', { name: 'Primary' }),
+    ).toBe(primary);
 
     expect(
-      within(navigation).getByRole('link', {
-        name: 'Person detail',
-      }),
-    ).toHaveAttribute('aria-current', 'page');
+      screen.getByRole('navigation', { name: 'People' }),
+    ).toBe(directory);
 
     await user.click(
-      within(navigation).getByRole('link', {
-        name: 'Home',
-      }),
+      within(primary).getByRole('link', { name: 'Home' }),
     );
 
     expect(

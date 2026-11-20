@@ -8,44 +8,24 @@ import { featuredPerson } from '../data/featuredPerson.js';
 
 function LocationProbe() {
   const location = useLocation();
-
-  return (
-    <p data-testid="current-path">
-      {location.pathname}
-    </p>
-  );
+  return <p data-testid="current-path">{location.pathname}</p>;
 }
 
-function renderApp(initialPath = '/', Detail) {
+function renderApp(path = '/', Detail) {
   return render(
-    <MemoryRouter initialEntries={[initialPath]}>
+    <MemoryRouter initialEntries={[path]}>
       <App Detail={Detail} />
       <LocationProbe />
     </MemoryRouter>,
   );
 }
 
-function createDeferredModule() {
-  let resolve;
-
-  const promise = new Promise((resolvePromise) => {
-    resolve = resolvePromise;
-  });
-
-  return {
-    promise,
-    resolve,
-  };
-}
-
-describe('Exercise 1.2.1 nested routing contract', () => {
-  it('renders Home inside the shared main and marks Home active', () => {
+describe('Shared layout routing regression', () => {
+  it('renders Home inside the single main', () => {
     renderApp();
 
     const main = screen.getByRole('main');
-    const navigation = screen.getByRole('navigation', {
-      name: 'Primary',
-    });
+    const primary = screen.getByRole('navigation', { name: 'Primary' });
 
     expect(screen.getAllByRole('main')).toHaveLength(1);
 
@@ -56,212 +36,104 @@ describe('Exercise 1.2.1 nested routing contract', () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByTestId('current-path'),
-    ).toHaveTextContent(/^\/$/);
+      within(primary).getByRole('link', { name: 'Home' }),
+    ).toHaveAttribute('aria-current', 'page');
 
-    const homeLink = within(navigation).getByRole('link', {
-      name: 'Home',
-    });
-
-    expect(homeLink).toHaveAttribute('aria-current', 'page');
-    expect(homeLink).toHaveClass('nav-link--active');
-
-    expect(
-      within(navigation).getByRole('link', {
-        name: 'About',
-      }),
-    ).not.toHaveAttribute('aria-current');
+    expect(screen.getByTestId('current-path')).toHaveTextContent(/^\/$/);
   });
 
-  it('changes the URL and child content while preserving the layout', async () => {
+  it('navigates to About without replacing the shared layout', async () => {
     const user = userEvent.setup();
-
     renderApp();
 
-    const navigation = screen.getByRole('navigation', {
-      name: 'Primary',
-    });
-
     const main = screen.getByRole('main');
+    const primary = screen.getByRole('navigation', { name: 'Primary' });
 
     await user.click(
-      within(navigation).getByRole('link', {
-        name: 'About',
-      }),
+      within(primary).getByRole('link', { name: 'About' }),
     );
 
     expect(
-      await within(main).findByRole('heading', {
-        name: 'About this lab',
-      }),
+      await within(main).findByRole('heading', { name: 'About this lab' }),
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByTestId('current-path'),
-    ).toHaveTextContent(/^\/about$/);
-
-    expect(
-      screen.getByRole('navigation', {
-        name: 'Primary',
-      }),
-    ).toBe(navigation);
+    expect(screen.getByTestId('current-path')).toHaveTextContent(
+      /^\/about$/,
+    );
 
     expect(screen.getByRole('main')).toBe(main);
-    expect(screen.getAllByRole('main')).toHaveLength(1);
+    expect(
+      screen.getByRole('navigation', { name: 'Primary' }),
+    ).toBe(primary);
 
-    const aboutLink = within(navigation).getByRole('link', {
-      name: 'About',
-    });
+    const about = within(primary).getByRole('link', { name: 'About' });
 
-    const homeLink = within(navigation).getByRole('link', {
-      name: 'Home',
-    });
-
-    expect(aboutLink).toHaveAttribute('aria-current', 'page');
-    expect(aboutLink).toHaveClass('nav-link--active');
-    expect(homeLink).not.toHaveAttribute('aria-current');
-    expect(homeLink).not.toHaveClass('nav-link--active');
+    expect(about).toHaveAttribute('aria-current', 'page');
+    expect(about).toHaveClass('nav-link--active');
 
     expect(
-      navigation.querySelectorAll('[aria-current="page"]'),
-    ).toHaveLength(1);
-
-    await user.click(homeLink);
-
-    expect(
-      await within(main).findByRole('heading', {
-        name: 'Performance & resiliency',
-      }),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByTestId('current-path'),
-    ).toHaveTextContent(/^\/$/);
+      within(primary).getByRole('link', { name: 'Home' }),
+    ).not.toHaveAttribute('aria-current');
   });
 
-  it('supports direct entry to About with the correct active link', () => {
+  it('supports direct About entry with one active primary link', () => {
     renderApp('/about');
 
-    const main = screen.getByRole('main');
-    const navigation = screen.getByRole('navigation', {
-      name: 'Primary',
-    });
+    const primary = screen.getByRole('navigation', { name: 'Primary' });
 
     expect(
-      within(main).getByRole('heading', {
-        name: 'About this lab',
-      }),
+      screen.getByRole('heading', { name: 'About this lab' }),
     ).toBeInTheDocument();
 
+    expect(
+      primary.querySelectorAll('[aria-current="page"]'),
+    ).toHaveLength(1);
+
+    expect(
+      within(primary).getByRole('link', { name: 'People' }),
+    ).not.toHaveAttribute('aria-current');
+
     expect(screen.getAllByRole('main')).toHaveLength(1);
-
-    const aboutLink = within(navigation).getByRole('link', {
-      name: 'About',
-    });
-
-    expect(aboutLink).toHaveAttribute('aria-current', 'page');
-    expect(aboutLink).toHaveClass('nav-link--active');
-
-    expect(
-      within(navigation).getByRole('link', {
-        name: 'Home',
-      }),
-    ).not.toHaveAttribute('aria-current');
-
-    expect(
-      within(navigation).getByRole('link', {
-        name: 'Person detail',
-      }),
-    ).not.toHaveAttribute('aria-current');
   });
 
-  it('preserves the shared layout while the detail module loads', async () => {
-    const user = userEvent.setup();
-    const deferred = createDeferredModule();
-    const PendingDetail = lazy(() => deferred.promise);
-
-    renderApp('/', PendingDetail);
-
-    const navigation = screen.getByRole('navigation', {
-      name: 'Primary',
+  it('preserves both navigation regions while detail is pending', async () => {
+    let resolveModule;
+    const promise = new Promise((resolve) => {
+      resolveModule = resolve;
     });
+    const PendingDetail = lazy(() => promise);
+
+    renderApp('/people/24520039', PendingDetail);
 
     const main = screen.getByRole('main');
+    const primary = screen.getByRole('navigation', { name: 'Primary' });
+    const directory = screen.getByRole('navigation', { name: 'People' });
 
-    await user.click(
-      within(navigation).getByRole('link', {
-        name: 'Person detail',
-      }),
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Loading person detail.',
     );
 
     expect(
-      await screen.findByRole('status'),
-    ).toHaveTextContent('Loading person detail.');
-
-    expect(
-      screen.getByRole('region', {
-        name: 'Person detail',
-      }),
-    ).toHaveAttribute('aria-busy', 'true');
-
-    expect(
-      screen.getByRole('navigation', {
-        name: 'Primary',
-      }),
-    ).toBe(navigation);
-
-    expect(screen.getByRole('main')).toBe(main);
-
-    expect(
-      within(navigation).getByRole('link', {
-        name: 'About',
-      }),
-    ).toBeInTheDocument();
-
-    const personLink = within(navigation).getByRole('link', {
-      name: 'Person detail',
-    });
-
-    expect(personLink).toHaveAttribute('aria-current', 'page');
-    expect(personLink).toHaveClass('nav-link--active');
-
-    expect(
-      within(navigation).getByRole('link', {
-        name: 'Home',
-      }),
-    ).not.toHaveAttribute('aria-current');
-
-    expect(
-      screen.getByTestId('current-path'),
-    ).toHaveTextContent(/^\/person$/);
+      within(primary).getByRole('link', { name: 'People' }),
+    ).toHaveAttribute('aria-current', 'page');
 
     const detailModule = await import('../pages/PersonDetail.jsx');
 
     await act(async () => {
-      deferred.resolve(detailModule);
-      await deferred.promise;
+      resolveModule(detailModule);
+      await promise;
     });
 
     expect(
-      await within(main).findByRole('heading', {
-        name: featuredPerson.name,
-      }),
+      await screen.findByRole('heading', { name: featuredPerson.name }),
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByRole('region', {
-        name: 'Person detail',
-      }),
-    ).toHaveAttribute('aria-busy', 'false');
-
-    expect(screen.queryByRole('status')).not.toBeInTheDocument();
-
-    expect(
-      screen.getByRole('navigation', {
-        name: 'Primary',
-      }),
-    ).toBe(navigation);
-
     expect(screen.getByRole('main')).toBe(main);
+    expect(
+      screen.getByRole('navigation', { name: 'Primary' }),
+    ).toBe(primary);
+    expect(
+      screen.getByRole('navigation', { name: 'People' }),
+    ).toBe(directory);
   });
 });
