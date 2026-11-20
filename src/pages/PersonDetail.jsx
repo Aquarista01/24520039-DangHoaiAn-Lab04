@@ -1,6 +1,26 @@
+import { useParams } from 'react-router';
 import PersonLayout from '../components/PersonLayout.jsx';
+import PersonNotFound from '../components/PersonNotFound.jsx';
+import { getProfileFields } from '../data/people.js';
 
-export default function PersonDetail({ person }) {
+export default function PersonDetail({ people }) {
+  const { id } = useParams();
+
+  const person = people.find(
+    (person) => person.id === id,
+  );
+
+  if (!person) {
+    return <PersonNotFound />;
+  }
+
+  const fields = getProfileFields(person);
+
+  const avatarSrc = person.avatarSrc ?? '/profile-avatar.svg';
+
+  const avatarAlt = person.avatarAlt
+    ?? `Profile illustration for ${person.name}`;
+
   return (
     <section
       className="person-panel"
@@ -11,8 +31,8 @@ export default function PersonDetail({ person }) {
         avatar={
           <img
             className="avatar"
-            src={person.avatarSrc}
-            alt={person.avatarAlt}
+            src={avatarSrc}
+            alt={avatarAlt}
             width="96"
             height="96"
           />
@@ -33,20 +53,20 @@ export default function PersonDetail({ person }) {
         }
       >
         <dl className="person-facts">
-          {person.facts.map((fact) => (
+          {fields.map((field) => (
             <div
               className="fact-row"
-              key={fact.label}
+              key={field.label}
             >
               <dt>
                 <span className="text-slot">
-                  {fact.label}
+                  {field.label}
                 </span>
               </dt>
 
               <dd>
                 <span className="text-slot">
-                  {fact.value}
+                  {field.value}
                 </span>
               </dd>
             </div>

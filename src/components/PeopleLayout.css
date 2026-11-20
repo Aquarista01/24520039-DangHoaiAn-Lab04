@@ -1,0 +1,88 @@
+.people-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) 2fr;
+  align-items: start;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.people-sidebar,
+.people-detail {
+  min-width: 0;
+}
+
+.people-sidebar {
+  padding: 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 1.25rem;
+  background: white;
+}
+
+.people-sidebar h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+.people-nav {
+  display: block;
+  margin-block-start: 1rem;
+}
+
+.people-list {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.people-list li {
+  min-width: 0;
+}
+
+.person-link {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  color: #1d4ed8;
+  text-decoration: none;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.person-link:hover {
+  background: #eff6ff;
+  border-color: #cbd5e1;
+}
+
+.person-link--active {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  box-shadow: inset 3px 0 0 #1d4ed8;
+}
+
+.person-link__name {
+  min-width: 0;
+  font-weight: 700;
+}
+
+.person-link__role {
+  min-width: 0;
+  color: #475569;
+  font-size: 0.875rem;
+}
+
+.person-link:focus-visible {
+  outline: 3px solid #7c3aed;
+  outline-offset: 3px;
+}
+
+@media (max-width: 800px) {
+  .people-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

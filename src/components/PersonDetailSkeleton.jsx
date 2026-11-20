@@ -1,4 +1,6 @@
 import PersonLayout from './PersonLayout.jsx';
+import PersonNotFound from './PersonNotFound.jsx';
+import { getProfileFields } from '../data/people.js';
 
 function SkeletonText({ children }) {
   return (
@@ -11,6 +13,12 @@ function SkeletonText({ children }) {
 }
 
 export default function PersonDetailSkeleton({ person }) {
+  if (!person) {
+    return <PersonNotFound pending />;
+  }
+
+  const fields = getProfileFields(person);
+
   return (
     <>
       <p
@@ -48,20 +56,20 @@ export default function PersonDetailSkeleton({ person }) {
           }
         >
           <dl className="person-facts">
-            {person.facts.map((fact) => (
+            {fields.map((field) => (
               <div
                 className="fact-row"
-                key={fact.label}
+                key={field.label}
               >
                 <dt>
                   <SkeletonText>
-                    {fact.label}
+                    {field.label}
                   </SkeletonText>
                 </dt>
 
                 <dd>
                   <SkeletonText>
-                    {fact.value}
+                    {field.value}
                   </SkeletonText>
                 </dd>
               </div>

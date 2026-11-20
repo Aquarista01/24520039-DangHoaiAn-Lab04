@@ -46,14 +46,14 @@ export default function Layout() {
             </NavLink>
 
             <NavLink
-              to="/person"
+              to="/people"
               className={({ isActive }) =>
                 isActive
                   ? 'nav-link nav-link--active'
                   : 'nav-link'
               }
             >
-              Person detail
+              People
             </NavLink>
           </nav>
         </header>
