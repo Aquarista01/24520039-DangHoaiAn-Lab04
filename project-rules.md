@@ -10,94 +10,87 @@
 - Follow Contract, Fail Test, Implement and Refactor.
 - Use atomic commits with conventional messages.
 - Record actual AI failures with evidence.
-- Do not fabricate failures, measurements or commit history.
+- Do not fabricate test results, profiler results or commit history.
 
-## Existing Stack
+## Existing Architecture
 
 - React 19, Vite, JavaScript and React Router 7.
-- Keep createRoot and StrictMode.
-- Keep one BrowserRouter in src/main.jsx.
-- Use the existing Vitest and React Testing Library setup.
-- Keep code, interface text and commit messages in English.
-
-## Preserved Exercise 1.1 Contract
-
-- Lazy-load the single PersonDetail page module.
-- Declare lazy at module scope in App.jsx.
-- Do not statically import PersonDetail in application modules.
-- Keep a separate Suspense skeleton.
-- Keep navigation outside the Suspense boundary.
-- Expose one polite loading status outside the busy region.
-- Clear busy state when content is ready.
-- Hide skeleton decorations from assistive technology.
-- Match profile and skeleton geometry.
-- Reserve avatar space and support reduced motion.
-- Do not introduce production loading delays.
-- Verify CLS in the browser instead of assuming zero.
-
-## Preserved Exercise 1.2.1 Contract
-
-- Use Routes, Route and element props.
+- Keep createRoot, StrictMode and one BrowserRouter.
 - Shared Layout owns the single main element.
-- Layout renders child routes through Outlet.
-- NavLink uses className callbacks with isActive.
-- Preserve Home, About and the general not-found page.
+- Keep Home, About, People and the general not-found page.
+- Keep /people and /people/:id with the shared people dataset.
+- Preserve useParams, guarded people.find and semantic profile metadata.
+- Preserve the single lazy PersonDetail module and matching skeleton.
+- Keep /person as the existing compatibility redirect.
+- Verify layout and CLS in the browser instead of assuming success.
 
-## Exercise 1.2.2 Direct Requirements
+## Exercise 1.3 Route and Scope
 
-- Use desktop Grid columns: minmax(280px, 1fr) 2fr.
-- Change to one column on narrow screens.
-- Read the person ID with useParams.
-- Find the record with people.find.
-- Check the lookup result before accessing person properties.
-- Render a person-not-found state for unknown IDs.
-- Render profile metadata with dl, dt and dd.
+- Add /form inside the existing shared layout.
+- Keep FormContext scoped to SimpleForm.
+- Do not add a backend, database, forum API or Homework.
 
-## Data Contract
+## Form Data Contract
 
-- Use one shared people array.
-- Each record has a unique stable string ID, name and role.
-- Avatar and additional facts are optional.
-- Reuse the existing featuredPerson data for the first record.
-- Do not generate IDs during render.
-- Do not use array indexes as list keys.
+- Raw values contain fullName, email and age as strings.
+- Full name is required after trimming whitespace.
+- Email is required and uses a basic format check.
+- Age is required and must be a positive safe integer.
+- Keep raw input editable; do not convert age during onChange.
+- Normalize only after a valid submit.
+- Normalize fullName by trimming and collapsing whitespace.
+- Normalize email by trimming.
+- Normalize age to a number.
 
-## Component Contract
+## State and Context Contract
 
-- PeopleLayout receives people.
-- It renders an accessible People navigation and an Outlet.
-- Each person uses NavLink, a stable key and an active callback.
-- PersonDetail receives the same people array.
-- URL parameters determine the selected record.
-- Do not synchronize selectedPerson state with the URL.
+- SimpleForm owns values.
+- Use functional immutable updates.
+- Context provides values and field update handlers.
+- Context also provides derived errors and isValid.
+- touched and submitted control feedback visibility.
+- Do not store errors or isValid in state.
+- Do not use effects for validation or parent-child synchronization.
+- Avoid unnecessary memoization.
+- The custom hook must reject use outside the provider.
 
-## Route Contract
+## InputField Contract
 
-- /: Home.
-- /about: About.
-- /people: directory and selection prompt.
-- /people/:id: lazy detail inside PeopleLayout.
-- /person: replace navigation to /people/24520039.
-- Other unmatched URLs: the existing general not-found page.
+- Use one useId call in each InputField instance.
+- Connect label and input with htmlFor and id.
+- Give each error its own ID.
+- aria-invalid reflects the displayed error.
+- aria-describedby references an existing error only.
+- Forward the explicitly supported HTML props.
+- Do not allow caller props to override controlled values or ARIA.
+- Preserve visible keyboard focus.
 
-## Loading and Error States
+## Submit and Inspector Contract
 
-- Select the loading skeleton using the target URL ID.
-- Keep both navigation regions visible during detail loading.
-- Unknown IDs have a matching pending fallback and final message.
-- A missing-record guard is not a React Error Boundary.
-- A client-side not-found view does not imply HTTP status 404.
-- Suspense does not provide import-error recovery.
+- Use a real form and a submit button.
+- Use noValidate with custom validation.
+- Prevent page reload.
+- Invalid submits do not create or replace the submitted snapshot.
+- Valid submits create a normalized snapshot.
+- Editing values does not modify the snapshot.
+- ShowData renders dl, dt and dd with stable field keys.
+- Preserve zero values and explicitly represent empty strings.
+- Announce each successful submission through a polite status.
+- Do not use window.alert.
 
 ## Verification
 
-- Update existing tests when their route contract changes.
-- Test the directory, selection, URL, active links and missing IDs.
-- Preserve loading, accessibility and shared-layout regression tests.
-- Test, lint and build must pass.
-- Check desktop, 375px, long text and keyboard navigation.
-- Verify local refresh, history and production chunk loading.
+- Use the existing Vitest and Testing Library setup.
+- Write and run failing tests before each milestone implementation.
+- Preserve the previous routing and lazy-loading tests.
+- Test initial values, validation, IDs, ARIA and submit behavior.
+- Run test, lint and build.
+- Inspect state and commits with React Developer Tools.
+- Keep StrictMode enabled.
+- Do not equate render invocations with committed updates.
 
-## Scope
+## Functional Commits
 
-- No form engine, forum API, backend or Homework.
+- feat: form context
+- feat: input field validation
+- feat: inspector output

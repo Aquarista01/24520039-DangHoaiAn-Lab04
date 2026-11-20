@@ -1,36 +1,47 @@
 # Lab 04 Task Decomposition
 
-## Existing Work
+## Preserved Work
 
-- Exercise 1.1: lazy profile module, Suspense and accessible skeleton.
-- Exercise 1.2.1: shared routing layout, Outlet and active NavLink callbacks.
+- Exercise 1.1: lazy detail module, Suspense and accessible skeleton.
+- Exercise 1.2.1: shared layout and declarative nested routing.
+- Exercise 1.2.2: responsive master-detail directory and guarded lookup.
 
-## Exercise 1.2.2
+## Exercise 1.3 Part A
 
-1. Verify the current branch, working tree and baseline checks.
-2. Define the shared dataset and master-detail route contract.
-3. Update route-dependent regression tests.
-4. Add failing master-detail tests.
-5. Create PeopleLayout and the shared people dataset.
-6. Read dynamic IDs and implement guarded detail lookup.
-7. Integrate the existing lazy page and matching skeleton.
-8. Add responsive Grid and long-text handling.
-9. Review the refactor and run automated checks.
-10. Verify navigation, history, direct refresh and accessibility.
+- Explain the legacy effect synchronization model.
+- Identify duplicated state and derived-state synchronization.
+- Explain the conditions for loops and stale asynchronous results.
+- Do not claim to have executed unavailable legacy source.
 
-## Sprint 1 Functional Commits
+## Milestone 1: Form Context
 
-- feat: router layout
-  Completed by the Exercise 1.2.1 implementation.
+- Define the schema and Context API.
+- Write and run Context update tests.
+- Implement local form values and immutable updates.
+- Add /form and shared navigation.
+- Commit: feat: form context.
 
-- feat: detail route handling
-  Completed by the verified Exercise 1.2.2 implementation.
+## Milestone 2: Input Validation
 
-## Supporting Commits
+- Write failing validation and accessibility tests.
+- Implement pure validation and normalization functions.
+- Implement Context-driven controlled InputField components.
+- Derive errors and isValid during render.
+- Add touched/submitted feedback and keyboard styling.
+- Commit: feat: input field validation.
 
-- Commit the updated contract before implementation.
-- Commit failing tests before implementation.
-- Add fix commits only for actual changes found during verification.
+## Milestone 3: Inspector Output
 
-Supporting commit groups describe the actual workflow.
-They do not impose additional lecturer-mandated commit counts.
+- Write failing submit and inspector tests.
+- Implement normalized valid-submit snapshots.
+- Preserve the previous snapshot during edits or invalid submits.
+- Render semantic ShowData output and successful-submit status.
+- Commit: feat: inspector output.
+
+## Final Verification
+
+- Run all existing and new tests, lint and build.
+- Verify navigation, keyboard access and narrow-screen layout.
+- Inspect Context/state in Components.
+- Record a typing interaction in Profiler.
+- Record actual findings without inventing render counts.

@@ -4,10 +4,7 @@ import './Layout.css';
 export default function Layout() {
   return (
     <>
-      <a
-        className="skip-link"
-        href="#main-content"
-      >
+      <a className="skip-link" href="#main-content">
         Skip to main content
       </a>
 
@@ -15,10 +12,7 @@ export default function Layout() {
         <header className="site-header">
           <p className="brand">
             Lab 04
-
-            <span>
-              Web Application Development
-            </span>
+            <span>Web Application Development</span>
           </p>
 
           <nav aria-label="Primary">
@@ -55,13 +49,22 @@ export default function Layout() {
             >
               People
             </NavLink>
+
+            <NavLink
+              to="/form"
+              end
+              className={({ isActive }) =>
+                isActive
+                  ? 'nav-link nav-link--active'
+                  : 'nav-link'
+              }
+            >
+              Form
+            </NavLink>
           </nav>
         </header>
 
-        <main
-          id="main-content"
-          tabIndex={-1}
-        >
+        <main id="main-content" tabIndex={-1}>
           <Outlet />
         </main>
 

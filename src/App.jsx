@@ -8,6 +8,7 @@ import {
 import Layout from './components/Layout.jsx';
 import PeopleLayout from './components/PeopleLayout.jsx';
 import PersonDetailSkeleton from './components/PersonDetailSkeleton.jsx';
+import SimpleForm from './components/form/SimpleForm.jsx';
 import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
 import NotFound from './pages/NotFound.jsx';
@@ -23,13 +24,8 @@ function PeopleIndex() {
       className="home-panel"
       aria-label="People selection"
     >
-      <h1>
-        Select a person to view their details
-      </h1>
-
-      <p>
-        Choose a profile from the People navigation.
-      </p>
+      <h1>Select a person to view their details</h1>
+      <p>Choose a profile from the People navigation.</p>
     </section>
   );
 }
@@ -44,9 +40,7 @@ function PersonRoute({ Detail, people }) {
   return (
     <Suspense
       key={id}
-      fallback={
-        <PersonDetailSkeleton person={person} />
-      }
+      fallback={<PersonDetailSkeleton person={person} />}
     >
       <Detail people={people} />
     </Suspense>
@@ -58,36 +52,20 @@ export default function App({
 }) {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={<Layout />}
-      >
-        <Route
-          index
-          element={<Home />}
-        />
-
-        <Route
-          path="about"
-          element={<About />}
-        />
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path="about" element={<About />} />
+        <Route path="form" element={<SimpleForm />} />
 
         <Route
           path="people"
           element={<PeopleLayout people={people} />}
         >
-          <Route
-            index
-            element={<PeopleIndex />}
-          />
-
+          <Route index element={<PeopleIndex />} />
           <Route
             path=":id"
             element={
-              <PersonRoute
-                Detail={Detail}
-                people={people}
-              />
+              <PersonRoute Detail={Detail} people={people} />
             }
           />
         </Route>
@@ -102,10 +80,7 @@ export default function App({
           }
         />
 
-        <Route
-          path="*"
-          element={<NotFound />}
-        />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );
