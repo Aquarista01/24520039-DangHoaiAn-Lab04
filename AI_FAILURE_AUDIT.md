@@ -59,3 +59,31 @@ focus before testing the profile link.
 
 The full Chrome rerun passed the keyboard checks on both dev and preview.
 The production run also measured zero CLS in all four scenarios.
+
+
+## Required Marker Changed Label Text in Validation Tests
+
+### Observation
+
+The initial Exercise 1.3 validation implementation rendered an asterisk
+as text inside each required field label. After implementation, all five
+InputField tests failed when using getByLabelText with an exact label.
+
+### Evidence
+
+Command: npm.cmd test
+
+Vitest reported 5 failed and 31 passed. Testing Library reported
+"Unable to find a label with the text of: Full name" even though
+the label had a matching for attribute and the input was required.
+
+### Correction
+
+Render the decorative asterisk through a CSS pseudo-element on an
+aria-hidden span. Keep the native required attribute and label association.
+
+### Verification
+
+All 36 tests passed after the correction. Chrome confirmed that all three
+inputs kept distinct label associations and that the error descriptions
+were added and removed as validation feedback changed.
