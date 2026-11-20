@@ -1,14 +1,16 @@
 import { useState } from 'react';
 import { FormContext } from './FormContext.js';
 import { createInitialValues, formFields } from './formSchema.js';
-import { validateForm } from './validation.js';
+import { normalizeForm, validateForm } from './validation.js';
 import InputField from './InputField.jsx';
+import ShowData from './ShowData.jsx';
 import './Form.css';
 
 export default function SimpleForm({ children }) {
   const [values, setValues] = useState(createInitialValues);
   const [touched, setTouched] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [submission, setSubmission] = useState(null);
 
   const errors = validateForm(values);
   const isValid = Object.keys(errors).length === 0;
@@ -32,6 +34,17 @@ export default function SimpleForm({ children }) {
   function handleSubmit(event) {
     event.preventDefault();
     setSubmitted(true);
+
+    if (!isValid) {
+      return;
+    }
+
+    const snapshot = normalizeForm(values);
+
+    setSubmission((previous) => ({
+      data: snapshot,
+      number: (previous?.number ?? 0) + 1,
+    }));
   }
 
   const context = {
@@ -88,6 +101,11 @@ export default function SimpleForm({ children }) {
             Submit profile
           </button>
         </form>
+
+        <ShowData
+          data={submission?.data ?? null}
+          submissionNumber={submission?.number ?? 0}
+        />
       </section>
     </FormContext>
   );
